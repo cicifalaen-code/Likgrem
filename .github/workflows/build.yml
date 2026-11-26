@@ -22,9 +22,13 @@ jobs:
       - name: Keystore
         run: echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > Your_Key.jks
 
-      - name: Set API ID & Hash
+            - name: Set API ID & Hash
         run: |
-          F=TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt
+          D=TMessagesProj/src/main/java/uz/unnarsx/cherrygram
+          cp $D/Extra.kt.example $D/Extra.kt
+          cp $D/chats/ui/MessageMenuHelper.java.example $D/chats/ui/MessageMenuHelper.java
+          cp $D/chats/helpers/MessagesFilterHelper.kt.example $D/chats/helpers/MessagesFilterHelper.kt
+          F=$D/Extra.kt
           sed -i 's|val appID: Int = 0|val appID: Int = ${{ secrets.TG_API_ID }}|' $F
           sed -i 's|val appHash: String = ""|val appHash: String = "${{ secrets.TG_API_HASH }}"|' $F
 
