@@ -6,9 +6,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Ambil source lengkap
+        uses: actions/checkout@v4
         with:
+          repository: arsLan4k1390/Cherrygram
+          ref: main_Reproducible_Builds
           submodules: recursive
+
+      - name: Ambil file dari repo sendiri
+        uses: actions/checkout@v4
+        with:
+          path: mine
 
       - uses: actions/setup-java@v4
         with:
@@ -19,20 +27,25 @@ jobs:
         with:
           validate-wrappers: false
 
-      - name: Keystore
-        run: echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > Your_Key.jks
-
-      - name: Set API ID & Hash
+      - name: Keystore, API, Firebase
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          TG_API_ID: ${{ secrets.TG_API_ID }}
+          TG_API_HASH: ${{ secrets.TG_API_HASH }}
         run: |
-          D=TMessagesProj/src/main/java/uz/unnarsx/cherrygram
-          cp $D/Extra.kt.example $D/Extra.kt
-          cp $D/chats/ui/MessageMenuHelper.java.example $D/chats/ui/MessageMenuHelper.java
-          cp $D/chats/helpers/MessagesFilterHelper.kt.example $D/chats/helpers/MessagesFilterHelper.kt
-          F=$D/Extra.kt
-          sed -i 's|val appID: Int = 0|val appID: Int = ${{ secrets.TG_API_ID }}|' $F
-          sed -i 's|val appHash: String = ""|val appHash: String = "${{ secrets.TG_API_HASH }}"|' $F
+          echo "$KEYSTORE_B64" | base64 -d > Your_Key.jks
+          cp mine/TMessagesProj/google-services.json TMessagesProj/google-services.json
+          F=TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt
+          sed -i "s|return 12345678|return $TG_API_ID|; s|return \"abcdefg\"|return \"$TG_API_HASH\"|" $F
+          G=TMessagesProj_AppStandalone/build.gradle
+          sed -i "s|'Your_Password'|System.getenv('KEY_PASSWORD')|g; s|'Your_Alias'|System.getenv('KEY_ALIAS')|g" $G
 
       - name: Build
+        env:
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           chmod +x gradlew
           ./gradlew :TMessagesProj_AppStandalone:assembleStandalone --no-daemon
@@ -40,4 +53,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: apk
-          path: TMessagesProj_AppStandalone/build/outputs/apk/**/standalone/*.apk
+          path: TMessagesProj_AppStandalone/build/outputs/apk/**/*.apk
