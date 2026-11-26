@@ -78,21 +78,21 @@ android {
 //        localeFilters += ["zz"]
     }
 
-    signingConfigs {
+        signingConfigs {
         debug {
             storeFile file('../Your_Key.jks')
-            storePassword 'Your_Password'
-            keyAlias 'Your_Alias'
-            keyPassword 'Your_Password'
+            storePassword 'amba123p'
+            keyAlias 'likgram'
+            keyPassword 'amba123p'
         }
 
         release {
             storeFile file('../Your_Key.jks')
-            storePassword 'Your_Password'
-            keyAlias 'Your_Alias'
-            keyPassword 'Your_Password'
+            storePassword 'amba123p'
+            keyAlias 'likgram'
+            keyPassword 'amba123p'
         }
-    }
+        }
 
     packaging {
         jniLibs {
