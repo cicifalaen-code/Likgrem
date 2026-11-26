@@ -16,6 +16,8 @@ jobs:
           java-version: 17
 
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          validate-wrappers: false
 
       - name: Keystore
         run: echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > Your_Key.jks
