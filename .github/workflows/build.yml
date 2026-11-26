@@ -22,7 +22,7 @@ jobs:
       - name: Keystore
         run: echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > Your_Key.jks
 
-            - name: Set API ID & Hash
+      - name: Set API ID & Hash
         run: |
           D=TMessagesProj/src/main/java/uz/unnarsx/cherrygram
           cp $D/Extra.kt.example $D/Extra.kt
