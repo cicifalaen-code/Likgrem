@@ -42,6 +42,16 @@ jobs:
           G=TMessagesProj_AppStandalone/build.gradle
           sed -i "s|'Your_Password'|System.getenv('KEY_PASSWORD')|g; s|'Your_Alias'|System.getenv('KEY_ALIAS')|g" $G
 
+      - name: Nama dan logo Likgram
+        run: |
+          R=TMessagesProj/src/main/res-cherrygram
+          M=mine/$R
+          sed -i 's|^APP_PACKAGE=.*|APP_PACKAGE=com.lik.likgram|' gradle.properties
+          sed -i -E 's#(name="(AppName|CG_AppName)"[^>]*>)[^<]*<#\1Likgram<#' TMessagesProj/src/main/res*/values*/*strings.xml
+          mkdir -p $R/drawable-nodpi
+          cp $M/drawable-nodpi/likgram_*.png $R/drawable-nodpi/
+          for f in $R/mipmap-anydpi-v26/icon_launcher_cherry*.xml; do cp $M/mipmap-anydpi-v26/icon_launcher_cherry.xml "$f"; done
+
       - name: Build
         env:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
