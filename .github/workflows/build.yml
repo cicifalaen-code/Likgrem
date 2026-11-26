@@ -37,6 +37,7 @@ jobs:
         run: |
           echo "$KEYSTORE_B64" | base64 -d > Your_Key.jks
           cp mine/TMessagesProj/google-services.json TMessagesProj/google-services.json
+          cp mine/TMessagesProj/google-services.json TMessagesProj_AppStandalone/google-services.json
           F=TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt
           sed -i "s|return 12345678|return $TG_API_ID|; s|return \"abcdefg\"|return \"$TG_API_HASH\"|" $F
           G=TMessagesProj_AppStandalone/build.gradle
