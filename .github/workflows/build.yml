@@ -111,6 +111,9 @@ jobs:
           # 3. Paksa judul aplikasi (CG_AppName) langsung di kode Java/Kotlin
           grep -rlE 'R\.string\.CG_AppName' $S/java | xargs -r perl -pi -e 's/(?:LocaleController\.)?getString\(R\.string\.CG_AppName\)/"Likgram"/g'
 
+          # 3b. Bentuk getString dengan key string, dan sisa bentuk lain
+          grep -rlE 'CG_AppName' $S/java | xargs -r perl -pi -e 's/(?:LocaleController\.)?getString\(\s*"CG_AppName"\s*,\s*R\.string\.CG_AppName\s*\)/"Likgram"/g; s/(?:LocaleController\.)?getString\(\s*R\.string\.CG_AppName\s*\)/"Likgram"/g'
+
           # 4. Teks "Telegram" di halaman About
           A=$S/java/uz/unnarsx/cherrygram/preferences/AboutPreferencesEntry.java
           sed -i 's/"Telegram " + BuildVars/"Likgram " + BuildVars/' $A
@@ -145,6 +148,14 @@ jobs:
           C=TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core
           sed -i 's/Not a Cherrygram backup/Not a Likgram backup/' $C/configs/backup/BackupHelper.kt
           sed -i 's/Cherrygram Version:/Likgram Version:/' $C/firebase/crashlytics/Crashlytics.java
+
+      - name: Cek sisa Cherrygram
+        run: |
+          S=TMessagesProj/src/main
+          echo "--- sisa CG_AppName di kode ---"
+          grep -rn 'CG_AppName' $S/java | head -40 || true
+          echo "--- sisa string Cherrygram di kode ---"
+          grep -rnE '"[^"]*Cherrygram[^"]*"' $S/java | grep -v -E 'github|t\.me|http' | head -60 || true
 
       - name: Build
         env:
