@@ -81,6 +81,9 @@ jobs:
           }
           logo cg_logo_notch '#12141C' '#D5E0F7'
           logo cg_logo_notch_white '#FFFFFF' '#12141C'
+          cp $D/cg_notification.xml $D/cg_settings.xml
+          cp $D/cg_notification.xml $D/cg_settings_bra.xml
+          sed 's/"24dp"/"48dp"/g' $D/cg_notification.xml > $D/camera_icon_cherrygram.xml
           sed -i -E 's/R\.drawable\.notification\b/R.drawable.cg_notification/g' $S/java/org/telegram/messenger/NotificationsController.java $S/java/uz/unnarsx/cherrygram/core/helpers/CGResourcesHelper.kt
           sed -i -E '/"CG_Icon_/ s/R\.(drawable|mipmap)\.[a-z0-9_]+, R\.drawable\.icon_foreground_cherry[a-z_]*/R.drawable.likgram_bg, R.drawable.likgram_fg/' $S/java/org/telegram/ui/LauncherIconController.java
 
