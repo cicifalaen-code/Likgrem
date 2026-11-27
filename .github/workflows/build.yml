@@ -105,7 +105,7 @@ jobs:
           # 2. Teks "Cherrygram" dan "Telegram" di semua strings.xml (hanya isi teks, bukan atribut name atau URL)
           find TMessagesProj/src -path '*values*' -name '*.xml' | xargs -r perl -pi -e '
             1 while s/(>[^<]*?)Cherrygram/${1}Likgram/;
-            1 while s/(>[^<]*?)(?<![\/.@])Telegram(?![a-zA-Z\/.])/${1}Likgram/;
+            1 while s/(>[^<]*?)(?<![\/.@])Telegram(?![a-zA-Z\/]|\.[a-z])/${1}Likgram/;
           '
 
           # 3. Cek sisa (cuma buat log)
