@@ -14,11 +14,19 @@ jobs:
       - name: Cari sumber judul
         run: |
           S=TMessagesProj/src/main
-          echo "=== 1. Literal dengan kata Cherrygram (bukan username/link) ==="
-          grep -rnI '"[^"]*Cherrygram' $S/java | grep -viE 't\.me|username|_CHANNEL|_CHAT|HiddenGifts|\.INSTANCE' | head -40 || true
-          echo "=== 2. Judul di DialogsActivity ==="
-          grep -nE 'AppName|setTitle\(|getAppName|CG_AppName' $S/java/org/telegram/ui/DialogsActivity.java | head -40 || true
-          echo "=== 3. Fungsi getAppName / nama app di helper ==="
-          grep -rnIE 'AppName|appName|getApplicationName' $S/java/uz | head -30 || true
-          echo "=== 4. String resource ber-Cherrygram ==="
-          grep -rnI 'Cherrygram' $S/res*/values/ | head -30 || true
+          D=$S/java/org/telegram/ui/DialogsActivity.java
+
+          echo "=== A. Semua pemakai AppName di kode (selain Dialogs) ==="
+          grep -rnIE 'CG_AppName|R\.string\.AppName|"AppName"|getAppName\(|getCherryAppName' $S/java | grep -v 'DialogsActivity.java' | head -50 || true
+
+          echo "=== B. DialogsActivity: AppName / Cherry ==="
+          grep -nE 'AppName|Cherrygram|CherrygramAppearance|HeaderTitle|FolderNameInHeader' $D | head -50 || true
+
+          echo "=== C. Resource yang isinya persis Cherrygram ==="
+          grep -rnIE '>[[:space:]]*Cherrygram[[:space:]]*<' TMessagesProj/src | head -30 || true
+
+          echo "=== D. Judul diset lewat ActionBar / helper ==="
+          grep -rnIE 'FolderNameInHeader|folderNameInHeader|showAppName|headerTitle' $S/java | head -30 || true
+
+          echo "=== E. File non-kode yang menyebut Cherrygram ==="
+          grep -rlI 'Cherrygram' TMessagesProj/src --include=*.json --include=*.txt --include=*.gradle | head -20 || true
