@@ -53,6 +53,37 @@ jobs:
           cp $M/drawable-nodpi/likgram_*.png $R/drawable-nodpi/
           for f in $R/mipmap-anydpi-v26/icon_launcher_cherry*.xml; do cp $M/mipmap-anydpi-v26/icon_launcher_cherry.xml "$f"; done
 
+      - name: Ganti sisa tampilan Cherrygram
+        run: |
+          S=TMessagesProj/src/main
+          sed -i 's/Cherrygram/Likgram/g' $S/res*/values*/*strings.xml
+          sed -i 's/return "Cherrygram/return "Likgram/' $S/java/uz/unnarsx/cherrygram/core/helpers/CGResourcesHelper.kt
+          I=$S/java/org/telegram/ui/IntroActivity.java
+          sed -i '/titles\[0\] = ssb;/d' $I
+          sed -i 's/R\.drawable\.cg_splash_static_foreground/R.mipmap.icon_launcher_cherry/' $I
+          sed -i 's/logo\.setBounds(left, top, .*);/logo.setBounds(0, 0, size, size);/' $I
+          sed -i -E 's#@drawable/cg_splash_animated[a-z_]*#@mipmap/icon_launcher_cherry#' $S/res*/values*/*.xml
+          sed -i 's#android:drawable="@drawable/cg_splash_static_foreground"#android:width="108dp" android:height="108dp" android:drawable="@mipmap/icon_launcher_cherry"#' $S/res-cherrygram/drawable/cg_splash_static.xml
+
+      - name: Ikon notifikasi, QR, dan pilihan ikon
+        run: |
+          S=TMessagesProj/src/main
+          D=$S/res-cherrygram/drawable
+          L='M8,3H12L9,14C7,14.5 4.5,16 3,18L5.5,6C6,4 7,3 8,3ZM3,21C5,17.5 8,16 11,16H15C15,19 13,21 10,21Z'
+          B='M15,9H20C21.5,9 22.5,10 22.5,12C22.5,14 21.5,15 20,15H18.5L17,17L16.3,15H15C13.5,15 12.5,14 12.5,12C12.5,10 13.5,9 15,9ZM14.5,12a0.8,0.8 0,1 0,1.6 0a0.8,0.8 0,1 0,-1.6 0ZM16.7,12a0.8,0.8 0,1 0,1.6 0a0.8,0.8 0,1 0,-1.6 0ZM18.9,12a0.8,0.8 0,1 0,1.6 0a0.8,0.8 0,1 0,-1.6 0Z'
+          A='xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24"'
+          P="<path android:fillType=\"evenOdd\" android:pathData=\"$L$B\""
+          for n in cg_notification cg_notification_bra; do
+            echo "<vector $A>$P android:fillColor=\"#FFFFFF\"/></vector>" > $D/$n.xml
+          done
+          logo() {
+            echo "<vector $A><path android:fillColor=\"$2\" android:pathData=\"M0,12a12,12 0,1 0,24 0a12,12 0,1 0,-24 0Z\"/><group android:scaleX=\"0.72\" android:scaleY=\"0.72\" android:pivotX=\"12\" android:pivotY=\"12\">$P android:fillColor=\"$3\"/></group></vector>" > $D/$1.xml
+          }
+          logo cg_logo_notch '#12141C' '#D5E0F7'
+          logo cg_logo_notch_white '#FFFFFF' '#12141C'
+          sed -i -E 's/R\.drawable\.notification\b/R.drawable.cg_notification/g' $S/java/org/telegram/messenger/NotificationsController.java $S/java/uz/unnarsx/cherrygram/core/helpers/CGResourcesHelper.kt
+          sed -i -E '/"CG_Icon_/ s/R\.(drawable|mipmap)\.[a-z0-9_]+, R\.drawable\.icon_foreground_cherry[a-z_]*/R.drawable.likgram_bg, R.drawable.likgram_fg/' $S/java/org/telegram/ui/LauncherIconController.java
+
       - name: Build
         env:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
