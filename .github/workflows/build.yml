@@ -136,7 +136,7 @@ jobs:
         run: |
           G=TMessagesProj_AppStandalone/build.gradle
           sed -i 's/outputFileName = "Cherrygram-/outputFileName = "Likgram-/' $G
-          sed -i 's|abiFilters "armeabi-v7a", "arm64-v8a"|abiFilters "arm64-v8a"|' $G
+          sed -i '/abiFilters "armeabi-v7a", "arm64-v8a"/d' $G
           sed -i 's|include "arm64-v8a", "armeabi-v7a"|include "arm64-v8a"|' $G
           sed -i 's|universalApk true|universalApk false|' $G
 
