@@ -84,6 +84,14 @@ jobs:
           sed -i -E 's/R\.drawable\.notification\b/R.drawable.cg_notification/g' $S/java/org/telegram/messenger/NotificationsController.java $S/java/uz/unnarsx/cherrygram/core/helpers/CGResourcesHelper.kt
           sed -i -E '/"CG_Icon_/ s/R\.(drawable|mipmap)\.[a-z0-9_]+, R\.drawable\.icon_foreground_cherry[a-z_]*/R.drawable.likgram_bg, R.drawable.likgram_fg/' $S/java/org/telegram/ui/LauncherIconController.java
 
+      - name: Warna biru dan matikan update
+        run: |
+          J=TMessagesProj/src/main/java/org/telegram/ui
+          sed -i 's/startMessagingButtonBackground\.setColors(.*);/startMessagingButtonBackground.setColors(new int[]{0xFF4F7DF3, 0xFF2F4FA8});/' $J/IntroActivity.java
+          sed -i '/public void checkAppUpdate(boolean force, Browser\.Progress progress, boolean updateAlways) {/a\        if (true) { if (progress != null) progress.end(); return; }' $J/LaunchActivity.java
+          sed -i '/applicationLoaderInstance\.showUpdaterBottomSheet(fragment, available, update);/d' $J/LaunchActivity.java
+          grep -rliE 'a33156|e54c7f|9d3254|9e3254|f6538a' TMessagesProj/src/main/java TMessagesProj/src/main/res-cherrygram | xargs sed -i 's/a33156/2F4FA8/Ig; s/e54c7f/4F7DF3/Ig; s/9d3254/2F4FA8/Ig; s/9e3254/2F4FA8/Ig; s/f6538a/4F7DF3/Ig'
+
       - name: Build
         env:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
