@@ -1,0 +1,24 @@
+name: Cek Cherrygram
+on:
+  workflow_dispatch:
+
+jobs:
+  cek:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: arsLan4k1390/Cherrygram
+          ref: main_Reproducible_Builds
+
+      - name: Cari sumber judul
+        run: |
+          S=TMessagesProj/src/main
+          echo "=== 1. Literal dengan kata Cherrygram (bukan username/link) ==="
+          grep -rnI '"[^"]*Cherrygram' $S/java | grep -viE 't\.me|username|_CHANNEL|_CHAT|HiddenGifts|\.INSTANCE' | head -40 || true
+          echo "=== 2. Judul di DialogsActivity ==="
+          grep -nE 'AppName|setTitle\(|getAppName|CG_AppName' $S/java/org/telegram/ui/DialogsActivity.java | head -40 || true
+          echo "=== 3. Fungsi getAppName / nama app di helper ==="
+          grep -rnIE 'AppName|appName|getApplicationName' $S/java/uz | head -30 || true
+          echo "=== 4. String resource ber-Cherrygram ==="
+          grep -rnI 'Cherrygram' $S/res*/values/ | head -30 || true
