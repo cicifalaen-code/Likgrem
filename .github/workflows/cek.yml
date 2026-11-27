@@ -11,25 +11,25 @@ jobs:
           repository: arsLan4k1390/Cherrygram
           ref: main_Reproducible_Builds
 
-      - name: Cek judul
+      - name: Cek header judul
         run: |
           S=TMessagesProj/src/main
           D=$S/java/org/telegram/ui/DialogsActivity.java
 
-          echo "=== 1. DialogsActivity sekitar judul ==="
-          sed -n '3590,3604p' $D
+          echo "=== 1. Blok getFolderNameInHeader di DialogsActivity ==="
+          grep -n -B3 -A10 'getFolderNameInHeader' $D | head -120 || true
 
-          echo "=== 2. Semua pemakai actionBarDefaultTitle ==="
-          grep -n 'actionBarDefaultTitle' $D | head -30
+          echo "=== 2. Semua actionBar.setTitle di DialogsActivity ==="
+          grep -n 'actionBar.setTitle\|setTitleOverlayText\|getCenterTitle' $D | head -40 || true
 
-          echo "=== 3. ActionBar.setTitle ==="
-          grep -rn --include=ActionBar.java 'void setTitle' $S/java | head
+          echo "=== 3. Judul di folder uz (di luar preferences) ==="
+          grep -rnI 'setTitle(\|CG_AppName\|AppName' $S/java/uz | grep -v '/preferences/' | head -40 || true
 
-          echo "=== 4. SimpleTextView.setText ==="
-          grep -rn --include=SimpleTextView.java 'setText(' $S/java | grep 'public' | head
+          echo "=== 4. Teks Cherry yang dipecah/digabung ==="
+          grep -rnI '"Cherry"\|"Cherry \|Cherry" *+\|"gram"' $S/java | head -20 || true
 
-          echo "=== 5. Cherrygram di assets / raw ==="
-          grep -rIl 'Cherrygram' $S/assets $S/res*/raw 2>/dev/null | head
+          echo "=== 5. Drawable bernama logo/title ==="
+          ls $S/res-cherrygram/drawable* 2>/dev/null | grep -iE 'logo|title|name|text|header' | head -30 || true
 
-          echo "=== 6. Definisi AppName di semua resource ==="
-          grep -rIn 'name="AppName"\|name="CG_AppName"' TMessagesProj/src | head
+          echo "=== 6. Definisi AppName di XML ==="
+          grep -rn 'name="AppName"\|name="CG_AppName"' TMessagesProj/src --include=*.xml | head -20 || true
