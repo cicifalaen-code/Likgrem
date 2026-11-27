@@ -115,13 +115,22 @@ jobs:
           A=$S/java/uz/unnarsx/cherrygram/preferences/AboutPreferencesEntry.java
           sed -i 's/"Telegram " + BuildVars/"Likgram " + BuildVars/' $A
 
-          # 5. Cek sisa (cuma buat log)
+          # 5. Ganti teks dari language pack (cloud strings) langsung di LocaleController
+          L=$(find $S/java -name LocaleController.java | head -1)
+          echo "LocaleController: $L"
+          perl -0pi -e 's#(return "LOC_ERR:" \+ key;\s*\}\s*)return value;#$1return value.replaceAll("Cherrygram", "Likgram").replaceAll("(?<![/.\@])Telegram(?![A-Za-z/]|[.][a-z])", "Likgram");#' "$L"
+          if ! grep -q 'replaceAll("Cherrygram", "Likgram")' "$L"; then
+            echo "PATCH LocaleController GAGAL, build dihentikan"
+            exit 1
+          fi
+          echo "--- hasil patch ---"
+          grep -n -B4 -A2 'replaceAll("Cherrygram"' "$L"
+
+          # 6. Cek sisa (cuma buat log)
           echo "--- sisa CG_AppName di kode (harus kosong) ---"
           grep -rn 'R.string.CG_AppName' $S/java || true
           echo "--- baris About ---"
           grep -n 'BUILD_VERSION_STRING' $A || true
-          echo "--- sisa literal Cherrygram ---"
-          grep -rnE '"Cherrygram|>[^<]*Cherrygram' $S/java $S/res*/values* | head -30 || true
 
       - name: Build
         env:
