@@ -11,22 +11,25 @@ jobs:
           repository: arsLan4k1390/Cherrygram
           ref: main_Reproducible_Builds
 
-      - name: Cari sumber judul
+      - name: Cek judul
         run: |
           S=TMessagesProj/src/main
           D=$S/java/org/telegram/ui/DialogsActivity.java
 
-          echo "=== A. Semua pemakai AppName di kode (selain Dialogs) ==="
-          grep -rnIE 'CG_AppName|R\.string\.AppName|"AppName"|getAppName\(|getCherryAppName' $S/java | grep -v 'DialogsActivity.java' | head -50 || true
+          echo "=== 1. DialogsActivity sekitar judul ==="
+          sed -n '3590,3604p' $D
 
-          echo "=== B. DialogsActivity: AppName / Cherry ==="
-          grep -nE 'AppName|Cherrygram|CherrygramAppearance|HeaderTitle|FolderNameInHeader' $D | head -50 || true
+          echo "=== 2. Semua pemakai actionBarDefaultTitle ==="
+          grep -n 'actionBarDefaultTitle' $D | head -30
 
-          echo "=== C. Resource yang isinya persis Cherrygram ==="
-          grep -rnIE '>[[:space:]]*Cherrygram[[:space:]]*<' TMessagesProj/src | head -30 || true
+          echo "=== 3. ActionBar.setTitle ==="
+          grep -rn --include=ActionBar.java 'void setTitle' $S/java | head
 
-          echo "=== D. Judul diset lewat ActionBar / helper ==="
-          grep -rnIE 'FolderNameInHeader|folderNameInHeader|showAppName|headerTitle' $S/java | head -30 || true
+          echo "=== 4. SimpleTextView.setText ==="
+          grep -rn --include=SimpleTextView.java 'setText(' $S/java | grep 'public' | head
 
-          echo "=== E. File non-kode yang menyebut Cherrygram ==="
-          grep -rlI 'Cherrygram' TMessagesProj/src --include=*.json --include=*.txt --include=*.gradle | head -20 || true
+          echo "=== 5. Cherrygram di assets / raw ==="
+          grep -rIl 'Cherrygram' $S/assets $S/res*/raw 2>/dev/null | head
+
+          echo "=== 6. Definisi AppName di semua resource ==="
+          grep -rIn 'name="AppName"\|name="CG_AppName"' TMessagesProj/src | head
