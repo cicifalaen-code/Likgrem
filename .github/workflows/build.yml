@@ -108,7 +108,19 @@ jobs:
             1 while s/(>[^<]*?)(?<![\/.@])Telegram(?![a-zA-Z\/]|\.[a-z])/${1}Likgram/;
           '
 
-          # 3. Cek sisa (cuma buat log)
+          # 3. Paksa judul aplikasi (CG_AppName) langsung di kode Java/Kotlin
+          grep -rlE 'R\.string\.CG_AppName' $S/java | xargs -r perl -pi -e 's/(?:LocaleController\.)?getString\(R\.string\.CG_AppName\)/"Likgram"/g'
+
+          # 4. Teks "Telegram" di halaman About
+          A=$S/java/uz/unnarsx/cherrygram/preferences/AboutPreferencesEntry.java
+          sed -i 's/"Telegram " + BuildVars/"Likgram " + BuildVars/' $A
+
+          # 5. Cek sisa (cuma buat log)
+          echo "--- sisa CG_AppName di kode (harus kosong) ---"
+          grep -rn 'R.string.CG_AppName' $S/java || true
+          echo "--- baris About ---"
+          grep -n 'BUILD_VERSION_STRING' $A || true
+          echo "--- sisa literal Cherrygram ---"
           grep -rnE '"Cherrygram|>[^<]*Cherrygram' $S/java $S/res*/values* | head -30 || true
 
       - name: Build
