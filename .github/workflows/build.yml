@@ -95,6 +95,22 @@ jobs:
           sed -i '/applicationLoaderInstance\.showUpdaterBottomSheet(fragment, available, update);/d' $J/LaunchActivity.java
           grep -rliE 'a33156|e54c7f|9d3254|9e3254|f6538a' TMessagesProj/src/main/java TMessagesProj/src/main/res-cherrygram | xargs sed -i 's/a33156/2F4FA8/Ig; s/e54c7f/4F7DF3/Ig; s/9d3254/2F4FA8/Ig; s/9e3254/2F4FA8/Ig; s/f6538a/4F7DF3/Ig'
 
+      - name: Ganti sisa Cherrygram dan Telegram
+        run: |
+          S=TMessagesProj/src/main
+
+          # 1. String literal "Cherrygram" di kode (hanya yang persis di dalam tanda kutip)
+          grep -rlF '"Cherrygram' $S/java | xargs -r sed -i 's/"Cherrygram"/"Likgram"/g; s/"Cherrygram /"Likgram /g'
+
+          # 2. Teks "Cherrygram" dan "Telegram" di semua strings.xml (hanya isi teks, bukan atribut name atau URL)
+          find TMessagesProj/src -path '*values*' -name '*.xml' | xargs -r perl -pi -e '
+            1 while s/(>[^<]*?)Cherrygram/${1}Likgram/;
+            1 while s/(>[^<]*?)(?<![\/.@])Telegram(?![a-zA-Z\/.])/${1}Likgram/;
+          '
+
+          # 3. Cek sisa (cuma buat log)
+          grep -rnE '"Cherrygram|>[^<]*Cherrygram' $S/java $S/res*/values* | head -30 || true
+
       - name: Build
         env:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
