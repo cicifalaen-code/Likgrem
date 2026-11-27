@@ -138,7 +138,7 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
         return  "Steps to reproduce:\n" +
                 "Write here the steps to reproduce\n\n" +
                 "Details:\n"+
-                "• Cherrygram Version: " + CGResourcesHelper.getCherryVersion() + " (" + CGResourcesHelper.getAbiCode() + ")\n" +
+                "• Likgram Version: " + CGResourcesHelper.getCherryVersion() + " (" + CGResourcesHelper.getAbiCode() + ")\n" +
                 "• Telegram Version: " + BuildVars.BUILD_VERSION_STRING + " (" + CGResourcesHelper.getSourceCodeVersion() + ")\n" +
                 "• Build Type: " + CGResourcesHelper.getBuildType() + "\n" +
                 "• Build Date: " + CGResourcesHelper.getBuildDate() + "\n" +

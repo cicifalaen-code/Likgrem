@@ -175,7 +175,7 @@ object BackupHelper {
             val prefsJson = file.bufferedReader(Charsets.UTF_8).use { JsonParser.parseReader(it) }
                 .asJsonObject
                 .getAsJsonObject(SP_NAME)
-                ?: throw IllegalArgumentException("Not a Cherrygram backup")
+                ?: throw IllegalArgumentException("Not a Likgram backup")
 
             context.getSharedPreferences(SP_NAME, Activity.MODE_PRIVATE).edit {
                 for ((rawKey, element) in prefsJson.entrySet()) {
