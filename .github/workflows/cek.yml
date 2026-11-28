@@ -1,7 +1,6 @@
 name: Cek Cherrygram
 on:
   workflow_dispatch:
-
 jobs:
   cek:
     runs-on: ubuntu-latest
@@ -10,26 +9,11 @@ jobs:
         with:
           repository: arsLan4k1390/Cherrygram
           ref: main_Reproducible_Builds
-
-      - name: Cek bahasa dan LocaleController
-        run: |
+      - run: |
           S=TMessagesProj/src/main
-          L=$(find $S/java -name LocaleController.java | head -1)
-
-          echo "=== 1. Resource bahasa Indonesia ==="
-          ls -d TMessagesProj/src/main/res*/values-in* 2>/dev/null || echo "TIDAK ADA values-in"
-
-          echo "=== 2. USE_CLOUD_STRINGS ==="
-          grep -rn 'USE_CLOUD_STRINGS' $S/java --include=BuildVars.java | head -5
-
-          echo "=== 3. Isi getStringInternal ==="
-          grep -n -A25 'private String getStringInternal' $L | cut -c1-180 | head -60
-
-          echo "=== 4. Penggantian teks di LocaleController ==="
-          grep -nE 'Cherrygram|CG_AppName|replace\(' $L | cut -c1-180 | head -30
-
-          echo "=== 5. titleOverlayText di DialogStoriesCell ==="
-          grep -rn 'titleOverlayText' $S/java --include=DialogStoriesCell.java | cut -c1-180 | head -30
-
-          echo "=== 6. Langpack khusus Cherrygram ==="
-          grep -rniE 'langpack|lang_pack' $S/java/uz | cut -c1-180 | head -20
+          echo "--- XML resource ---"
+          grep -rniE 'cherrygram' $S/res* --include=*.xml | grep -viE 'github|t\.me|http|package|authorities' | cut -c1-220 | head -80
+          echo "--- file bukan kode/xml ---"
+          grep -rliE 'cherrygram' $S --exclude=*.java --exclude=*.kt --exclude=*.xml | head -40
+          echo "--- DialogsActivity ---"
+          grep -niE 'cherry|setTitle' $S/java/org/telegram/ui/DialogsActivity.java | cut -c1-200 | head -40
