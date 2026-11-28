@@ -149,6 +149,40 @@ jobs:
           sed -i 's/Not a Cherrygram backup/Not a Likgram backup/' $C/configs/backup/BackupHelper.kt
           sed -i 's/Cherrygram Version:/Likgram Version:/' $C/firebase/crashlytics/Crashlytics.java
 
+      - name: Logo teks Likgram di header daftar chat
+        run: |
+          S=TMessagesProj/src/main
+          D=$S/res-cherrygram/drawable-nodpi
+          mkdir -p $D
+          python3 -c "import PIL" 2>/dev/null || pip install pillow || pip install --break-system-packages pillow
+          D=$D python3 - <<'PY'
+          import os
+          from PIL import Image, ImageDraw, ImageFont
+          W, H = 440, 100
+          size = 70
+          while size > 10:
+              try:
+                  f = ImageFont.truetype("DejaVuSans-Bold.ttf", size)
+              except Exception:
+                  f = ImageFont.load_default(size=size)
+              bb = f.getbbox("Likgram")
+              if bb[2] - bb[0] <= W - 40 and bb[3] - bb[1] <= H - 30:
+                  break
+              size -= 2
+          img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+          ImageDraw.Draw(img).text((W / 2, H / 2), "Likgram", font=f, fill=(255, 255, 255, 255), anchor="mm")
+          img.save(os.environ["D"] + "/likgram_logo_text.png")
+          PY
+          F=$S/java/org/telegram/ui/Stories/DialogStoriesCell.java
+          sed -i 's/R\.drawable\.telegram_logo_2/R.drawable.likgram_logo_text/g' $F
+          if ! grep -q 'likgram_logo_text' $F; then
+            echo "PATCH logo GAGAL, build dihentikan"
+            exit 1
+          fi
+          ls -la $D/likgram_logo_text.png
+          echo "--- pemakaian telegram_logo_2 yang tersisa ---"
+          grep -rn 'telegram_logo_2' $S/java || true
+
       - name: Cek sisa Cherrygram
         run: |
           S=TMessagesProj/src/main
